@@ -19,7 +19,12 @@ const registerAge = $("#age");
 const registerPassword = $("#password");
 const registerRePassword = $("#repassword");
 const submitButton = $("#submit-button");
-let a,b,c,d,e;
+let aValidation = false,
+    bValidation = false,
+    cValidation = false,
+    dValidation = false,
+    eValidation = false,
+    fValidation = false;
 let categories = [];
 let container;
 
@@ -137,7 +142,6 @@ function displayCategories(arr) {
     }
 }
 function displayAreaList(arr) {
-
     areaContainer.html("");
     console.log(arr);
     for (const cat of arr) {
@@ -156,10 +160,9 @@ function displayAreaList(arr) {
     }
 }
 function displayIngredientList(arr) {
-
     ingredientsContainer.html("");
     console.log(arr);
-    for (const cat of arr.slice(0,20)) {
+    for (const cat of arr.slice(0, 20)) {
         ingredientsContainer.append(`
             <div class="relative group overflow-hidden cursor-pointer bg-blue-400 h-64" data-id="${
                 cat.strIngredient
@@ -169,10 +172,7 @@ function displayIngredientList(arr) {
                         cat.strIngredient
                     }</h3>
                                     <p>
-                    ${cat.strDescription
-                        .split(" ")
-                        .slice(0, 20)
-                        .join(" ")}
+                    ${cat.strDescription.split(" ").slice(0, 20).join(" ")}
                     </p>
                 </div>
                 <img
@@ -288,13 +288,11 @@ searchTitleSidebar.on("click", () => {
     displayMeals();
 });
 
-contactTitleSidebar.on("click",()=>{
-    contactUs.parentsUntil(".body").siblings(".all").addClass("hidden")
-    contactUs.parentsUntil(".body").removeClass("hidden")
+contactTitleSidebar.on("click", () => {
+    contactUs.parentsUntil(".body").siblings(".all").addClass("hidden");
+    contactUs.parentsUntil(".body").removeClass("hidden");
     searchContainer.addClass("hidden");
-
-
-})
+});
 
 // Start All Standard Fetching
 
@@ -329,91 +327,113 @@ fetchIngredientList().then((res) => {
     });
 });
 
-
-
-
-
-registerName.on("change",function(){
-    if(this.value == ""){
-        $(this).next().removeClass("hidden")
-        a = false;
-    }else{
-        $(this).next().addClass("hidden")
-        a=true;
+registerName.on("change", function () {
+    if (this.value == "") {
+        $(this).next().removeClass("hidden");
+        aValidation = false;
+    } else {
+        $(this).next().addClass("hidden");
+        aValidation = true;
     }
-})
+});
 
-registerEmail.on("input",function(){
+registerEmail.on("input", function () {
     console.log(this.value);
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if(emailRegex.test(this.value)){
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (emailRegex.test(this.value)) {
         console.log("ok");
-        $(this).next().addClass("hidden")
-        b = false;
-    }
-    else{
+        $(this).next().addClass("hidden");
+        bValidation = true;
+    } else {
         console.log("not Ok");
-        $(this).next().removeClass("hidden")
-        b=true;
+        $(this).next().removeClass("hidden");
+        bValidation = false;
     }
-})
-registerPhone.on("input",function(){
+});
+registerPhone.on("input", function () {
     console.log(this.value);
-    const phone = /^01[0-9]/
-    if(phone.test(this.value)){
+    const phone = /^01[0-9]/;
+    if (phone.test(this.value)) {
         console.log("ok");
-        $(this).next().addClass("hidden")
-        c=false;
-    }
-    else{
+        $(this).next().addClass("hidden");
+        cValidation = true;
+    } else {
         console.log("not Ok");
-        $(this).next().removeClass("hidden")
-        c=true;
+        $(this).next().removeClass("hidden");
+        cValidation = false;
     }
-})
-registerAge.on("input",function(){
+});
+registerAge.on("input", function () {
     console.log(this.value);
-    const age = /^(1[01][0-9]|120|[1-9][0-9]?)$/
-    if(age.test(this.value)){
+    const age = /^(1[01][0-9]|120|[1-9][0-9]?)$/;
+    if (age.test(this.value)) {
         console.log("ok");
-        $(this).next().addClass("hidden")
-        d=false;
-    }
-    else{
+        $(this).next().addClass("hidden");
+        dValidation = true;
+    } else {
         console.log("not Ok");
-        $(this).next().removeClass("hidden")
-        d=true;
+        $(this).next().removeClass("hidden");
+        dValidation = false;
     }
-})
-registerPassword.on("input",function(){
+});
+registerPassword.on("input", function () {
     console.log(this.value);
-    const age = /^(?=.*[A-Za-z]).{8,}$/
-    if(age.test(this.value)){
+    const age = /^(?=.*[A-Za-z]).{8,}$/;
+    if (age.test(this.value)) {
         console.log("ok");
-        $(this).next().addClass("hidden")
-        e=false;
-    }
-    else{
+        $(this).next().addClass("hidden");
+        eValidation = true;
+    } else {
         console.log("not Ok");
-        $(this).next().removeClass("hidden")
-        e=true
+        $(this).next().removeClass("hidden");
+        eValidation = false;
     }
-})
-registerRePassword.on("input",function(){
+});
+registerRePassword.on("input", function () {
     console.log(registerPassword.eq(0)[0].value);
-    if(registerPassword.eq(0)[0].value == this.value){
-        // console.log("ok");
-        $(this).next().addClass("hidden")
-        f=false;
-    }
-    else{
+    if (registerPassword.val() == this.value) {
+        $(this).next().addClass("hidden");
+        fValidation = true;
+    } else {
         console.log("not Ok");
-        $(this).next().removeClass("hidden")
-        f=true;
+        $(this).next().removeClass("hidden");
+        fValidation = false;
     }
-})
+    if (
+        validation(
+            aValidation,
+            bValidation,
+            cValidation,
+            dValidation,
+            eValidation,
+            fValidation
+        )
+    ) {
+        submitButton.removeAttr("disabled");
+    } else {
+        submitButton.attr("disabled", true);
+    }
+});
 
-function validation(a,b,c,d,e){
-
+function validation(a, b, c, d, e, f) {
+    console.log(a, b, c, d, e, f);
+    return a & b & c & d & e & f;
 }
-submitButton.attr("disabled",!true)
+submitButton.attr(
+    "disabled",
+    validation(
+        aValidation,
+        bValidation,
+        cValidation,
+        dValidation,
+        eValidation,
+        fValidation
+    )
+);
+// console.log(validation());
+registerAge.val("");
+registerEmail.val("");
+registerName.val("");
+registerPassword.val("");
+registerPhone.val("");
+registerRePassword.val("");
