@@ -19,6 +19,7 @@ const registerAge = $("#age");
 const registerPassword = $("#password");
 const registerRePassword = $("#repassword");
 const submitButton = $("#submit-button");
+const detailsContainer = $(".details .container");
 let aValidation = false,
     bValidation = false,
     cValidation = false,
@@ -43,7 +44,7 @@ function displayMeals(arr) {
     mealsContainer.html("");
     for (const cat of arr.slice(0, 20)) {
         mealsContainer.append(`
-            <div class="relative group overflow-hidden cursor-pointer">
+            <div class="relative group overflow-hidden cursor-pointer" data-id-meal="${cat.idMeal}">
                 <div class="img-layer bg-white text-center p-5 w-full h-full absolute top-96 group-hover:top-0 duration-500 bg-opacity-75 flex flex-col justify-center items-center">
                     <h3 class="category-name text-black  text-2xl font-bold z-10">${cat.strMeal}</h3>
                 </div>
@@ -55,7 +56,61 @@ function displayMeals(arr) {
             </div>
             `);
     }
+    mealsContainer.children().on("click", function () {
+        fetchMealDetails($(this).attr("data-id-meal")).then((res) =>
+            displayDetails(res)
+        );
+        detailsContainer.parent().removeClass("hidden");
+        detailsContainer.parent().siblings(".all").addClass("hidden");
+        searchContainer.parentsUntil("body").addClass("hidden");
+    });
 }
+
+async function fetchMealDetails(query) {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${
+            query || "52772"
+        }`
+    );
+    let result = await v1Result.json();
+    return result.meals[0];
+}
+async function displayDetails(obj) {
+    detailsContainer.html(`
+                        <div class="w-4/12 h-96">
+                    <div class="img-container w-8/12 mx-auto overflow-hidden rounded-3xl mt-8">
+                        <img src="${obj.strMealThumb}" alt="" class="w-full">
+                    </div>
+                    <h3 class=" text-xl text-center">${obj.strMeal}</h3>
+                </div>
+                <div class="w-8/12 h-96 p-4">
+                    <h3 class="text-2xl">Instructions:</h3>
+                    <p class="">
+                    ${obj.strInstructions}
+                    </p>
+                    <h4 class="text-xl"><span class="font-bold ">Area </span>: ${obj.strArea}</h4>
+                    <h4 class="text-xl"><span class="font-bold ">Category</span>: ${obj.strCategory}</h4>
+                    <h4 class="font-bold text-2xl">recipes:</h4>
+                    <div class="recipes my-2">
+                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                    </div>
+                    <h4 class="font-bold text-2xl">Tags:</h4>
+                    <div class="tags my-2">
+                        <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
+                        <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
+                    </div>
+                    <a href="${obj.strYoutube}" class="px-4 inline-block py-2 bg-red-600 rounded-3xl mt-4">youtube</a>
+                    <a href="${obj.strYoutube}" class="px-4 inline-block py-2 bg-slate-600 rounded-3xl mt-4">source</a>
+                </div>
+        `);
+}
+
 async function fetchMealsByLetter(query) {
     let v1Result = await fetch(
         `https://www.themealdb.com/api/json/v1/1/search.php?f=${query || "b"}`
@@ -164,7 +219,7 @@ function displayIngredientList(arr) {
     console.log(arr);
     for (const cat of arr.slice(0, 20)) {
         ingredientsContainer.append(`
-            <div class="relative group overflow-hidden cursor-pointer bg-blue-400 h-64" data-id="${
+            <div class="relative group overflow-hidden cursor-pointer bg-sky-400 h-64" data-id="${
                 cat.strIngredient
             }">
                 <div class="img-layer bg-white text-center p-5 w-full h-full absolute top-96 group-hover:top-0 duration-500 bg-opacity-75 flex flex-col justify-center items-center">
@@ -184,10 +239,6 @@ function displayIngredientList(arr) {
             `);
     }
 }
-
-// mealsContainer.children().on("click", function () {
-//     this;
-// });
 
 inputSearch.on("input", function (e) {
     fetchMealsByName(e.target.value).then((res) => {
@@ -250,8 +301,6 @@ $("#toggleBtn").on("click", (e) => {
         $("#toggleBtn").html('<i class="fa-solid fa-xmark"></i>');
     }
 });
-
-console.log(categoriesContainer);
 
 categoryTitleSidebar.on("click", () => {
     console.log("i'm clicked");
