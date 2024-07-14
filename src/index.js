@@ -1,0 +1,419 @@
+const inputSearch = $("input#searchByName");
+const inputSearchByLetter = $("input#searchByFirstLetter");
+const searchContainer = $(".searchSection");
+const mealsContainer = $(".meals-container .grid");
+const categoriesContainer = $(".categories-container .grid");
+const areaContainer = $(".area-container .grid");
+const ingredientsContainer = $(".ingredients-container .grid");
+const contactUs = $(".contact-us .container");
+const leftSidebar = $(".sidebar.left");
+const searchTitleSidebar = $("#search-title-sidebar");
+const categoryTitleSidebar = $("#category-title-sidebar");
+const areaTitleSidebar = $("#area-title-sidebar");
+const ingredientTitleSidebar = $("#ingredients-title-sidebar");
+const contactTitleSidebar = $("#contact-title-sidebar");
+const registerName = $("#register-name");
+const registerEmail = $("#email");
+const registerPhone = $("#phone");
+const registerAge = $("#age");
+const registerPassword = $("#password");
+const registerRePassword = $("#repassword");
+const submitButton = $("#submit-button");
+let a,b,c,d,e;
+let categories = [];
+let container;
+
+async function fetchMealsByName(query) {
+    let v1Result = await fetch(
+        `https:/www.themealdb.com/api/json/v1/1/search.php?s=${
+            query || "chicken"
+        }`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+function displayMeals(arr) {
+    mealsContainer.parentsUntil("body").siblings(".all").addClass("hidden");
+    mealsContainer.parentsUntil("body").removeClass("hidden");
+    mealsContainer.html("");
+    for (const cat of arr.slice(0, 20)) {
+        mealsContainer.append(`
+            <div class="relative group overflow-hidden cursor-pointer">
+                <div class="img-layer bg-white text-center p-5 w-full h-full absolute top-96 group-hover:top-0 duration-500 bg-opacity-75 flex flex-col justify-center items-center">
+                    <h3 class="category-name text-black  text-2xl font-bold z-10">${cat.strMeal}</h3>
+                </div>
+                <img
+                    class="h-auto max-w-full rounded-lg"
+                    src="${cat.strMealThumb}"
+                    alt=""
+                />
+            </div>
+            `);
+    }
+}
+async function fetchMealsByLetter(query) {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/search.php?f=${query || "b"}`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+
+async function fetchMealsByCategory(query) {
+    categories.includes(query) ? null : categories.push(query);
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/filter.php?c=${
+            query || "chicken"
+        }`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+async function fetchMealsByingredient(query) {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/filter.php?i=${
+            query || "chicken_breast"
+        }`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+async function fetchByArea(query) {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/filter.php?a=${query}`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+
+async function fetchAreaList() {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/list.php?a=list`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+async function fetchCategories() {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/categories.php`
+    );
+    let result = await v1Result.json();
+    return result.categories;
+}
+
+async function fetchIngredientList() {
+    let v1Result = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/list.php?i=list`
+    );
+    let result = await v1Result.json();
+    return result.meals;
+}
+
+function displayCategories(arr) {
+    categoriesContainer.html("");
+    for (const cat of arr) {
+        categoriesContainer.append(`
+            <div class="relative group overflow-hidden cursor-pointer" data-category="${
+                cat.strCategory
+            }">
+                <div class="img-layer bg-white text-center p-5 w-full h-full absolute top-96 group-hover:top-0 duration-500 bg-opacity-75 flex flex-col justify-center items-center">
+                    <h3 class="category-name text-black  text-2xl font-bold z-10">${
+                        cat.strCategory
+                    }</h3>
+                    <p>
+                    ${cat.strCategoryDescription
+                        .split(" ")
+                        .slice(0, 20)
+                        .join(" ")}
+                    </p>
+                </div>
+                <img
+                    class="h-auto max-w-full rounded-lg"
+                    src="${cat.strCategoryThumb}"
+                    alt=""
+                />
+            </div>
+            `);
+    }
+}
+function displayAreaList(arr) {
+
+    areaContainer.html("");
+    console.log(arr);
+    for (const cat of arr) {
+        areaContainer.append(`
+            <div class="relative group overflow-hidden cursor-pointer bg-blue-400 h-64" data-id="${cat.strArea}">
+                <div class="img-layer bg-white text-center p-5 w-full h-full absolute top-96 group-hover:top-0 duration-500 bg-opacity-75 flex flex-col justify-center items-center">
+                    <h3 class="category-name text-black  text-2xl font-bold z-10">${cat.strArea}</h3>
+                </div>
+                <img
+                    class="h-auto max-w-full rounded-lg"
+                    src=""
+                    alt=""
+                />
+            </div>
+            `);
+    }
+}
+function displayIngredientList(arr) {
+
+    ingredientsContainer.html("");
+    console.log(arr);
+    for (const cat of arr.slice(0,20)) {
+        ingredientsContainer.append(`
+            <div class="relative group overflow-hidden cursor-pointer bg-blue-400 h-64" data-id="${
+                cat.strIngredient
+            }">
+                <div class="img-layer bg-white text-center p-5 w-full h-full absolute top-96 group-hover:top-0 duration-500 bg-opacity-75 flex flex-col justify-center items-center">
+                    <h3 class="category-name text-black  text-2xl font-bold z-10">${
+                        cat.strIngredient
+                    }</h3>
+                                    <p>
+                    ${cat.strDescription
+                        .split(" ")
+                        .slice(0, 20)
+                        .join(" ")}
+                    </p>
+                </div>
+                <img
+                    class="h-auto max-w-full rounded-lg"
+                    src=""
+                    alt=""
+                />
+            </div>
+            `);
+    }
+}
+
+// mealsContainer.children().on("click", function () {
+//     this;
+// });
+
+inputSearch.on("input", function (e) {
+    fetchMealsByName(e.target.value).then((res) => {
+        displayMeals(res);
+    });
+});
+inputSearchByLetter.on("input", function (e) {
+    fetchMealsByLetter(e.target.value).then((res) =>
+        displayMeals(res.slice(0, 20))
+    );
+});
+
+// Initialize the sidebar
+leftSidebar.sidebar({ side: "left", speed: 500 });
+
+// Event to close the sidebar on button click
+$("#toggleBtn").on("click", (e) => {
+    if (leftSidebar.hasClass("sidebar-open")) {
+        leftSidebar.trigger("sidebar:close");
+        leftSidebar.removeClass("sidebar-open");
+        let items = leftSidebar.find("li").toArray().reverse();
+        $(items).each(function (index) {
+            $(this)
+                .delay(index * 60)
+                .animate(
+                    {
+                        top: "200px",
+                    },
+                    {
+                        duration: 700,
+                        specialEasing: {
+                            // width: "linear",
+                            height: "easeBounce",
+                        },
+                    }
+                );
+        });
+        $("#toggleBtn").html(` <i class="fa-solid fa-bars"></i>`);
+    } else {
+        leftSidebar.trigger("sidebar:open");
+        leftSidebar.addClass("sidebar-open");
+        //select all li in sidebar and animate
+        leftSidebar.find("li").each(function (index) {
+            $(this)
+                .delay(index * 60)
+                .animate(
+                    {
+                        top: "0px",
+                    },
+                    {
+                        duration: 700,
+                        specialEasing: {
+                            // width: "linear",
+                            height: "easeBounce",
+                        },
+                    }
+                );
+        });
+
+        $("#toggleBtn").html('<i class="fa-solid fa-xmark"></i>');
+    }
+});
+
+console.log(categoriesContainer);
+
+categoryTitleSidebar.on("click", () => {
+    console.log("i'm clicked");
+    console.log(
+        categoriesContainer
+            .parentsUntil("body")
+            .siblings(".all")
+            .addClass("hidden")
+    );
+    categoriesContainer.parentsUntil("body").removeClass("hidden");
+    searchContainer.addClass("hidden");
+});
+
+areaTitleSidebar.on("click", () => {
+    console.log("i'm clicked");
+    areaContainer.parentsUntil("body").siblings(".all").addClass("hidden");
+    areaContainer.parentsUntil("body").removeClass("hidden");
+    searchContainer.addClass("hidden");
+});
+
+ingredientTitleSidebar.on("click", () => {
+    console.log("i'm clicked");
+    ingredientsContainer
+        .parentsUntil("body")
+        .siblings(".all")
+        .addClass("hidden");
+    ingredientsContainer.parentsUntil("body").removeClass("hidden");
+    searchContainer.addClass("hidden");
+});
+
+searchTitleSidebar.on("click", () => {
+    searchContainer.removeClass("hidden");
+    mealsContainer.html("");
+    displayMeals();
+});
+
+contactTitleSidebar.on("click",()=>{
+    contactUs.parentsUntil(".body").siblings(".all").addClass("hidden")
+    contactUs.parentsUntil(".body").removeClass("hidden")
+    searchContainer.addClass("hidden");
+
+
+})
+
+// Start All Standard Fetching
+
+fetchCategories().then((res) => {
+    displayCategories(res);
+    categoriesContainer.children().on("click", function (e) {
+        console.log($(this).attr("data-category"));
+        fetchMealsByCategory($(this).attr("data-category")).then((res) => {
+            console.log(res);
+            displayMeals(res);
+        });
+    });
+});
+
+fetchAreaList().then((res) => {
+    displayAreaList(res);
+    areaContainer.children().on("click", function (e) {
+        console.log($(this).attr("data-category"));
+        fetchByArea($(this).attr("data-id")).then((res) => {
+            displayMeals(res);
+        });
+    });
+});
+
+fetchIngredientList().then((res) => {
+    displayIngredientList(res);
+    ingredientsContainer.children().on("click", function (e) {
+        console.log($(this).attr("data-category"));
+        fetchMealsByingredient($(this).attr("data-id")).then((res) => {
+            displayMeals(res);
+        });
+    });
+});
+
+
+
+
+
+registerName.on("change",function(){
+    if(this.value == ""){
+        $(this).next().removeClass("hidden")
+        a = false;
+    }else{
+        $(this).next().addClass("hidden")
+        a=true;
+    }
+})
+
+registerEmail.on("input",function(){
+    console.log(this.value);
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if(emailRegex.test(this.value)){
+        console.log("ok");
+        $(this).next().addClass("hidden")
+        b = false;
+    }
+    else{
+        console.log("not Ok");
+        $(this).next().removeClass("hidden")
+        b=true;
+    }
+})
+registerPhone.on("input",function(){
+    console.log(this.value);
+    const phone = /^01[0-9]/
+    if(phone.test(this.value)){
+        console.log("ok");
+        $(this).next().addClass("hidden")
+        c=false;
+    }
+    else{
+        console.log("not Ok");
+        $(this).next().removeClass("hidden")
+        c=true;
+    }
+})
+registerAge.on("input",function(){
+    console.log(this.value);
+    const age = /^(1[01][0-9]|120|[1-9][0-9]?)$/
+    if(age.test(this.value)){
+        console.log("ok");
+        $(this).next().addClass("hidden")
+        d=false;
+    }
+    else{
+        console.log("not Ok");
+        $(this).next().removeClass("hidden")
+        d=true;
+    }
+})
+registerPassword.on("input",function(){
+    console.log(this.value);
+    const age = /^(?=.*[A-Za-z]).{8,}$/
+    if(age.test(this.value)){
+        console.log("ok");
+        $(this).next().addClass("hidden")
+        e=false;
+    }
+    else{
+        console.log("not Ok");
+        $(this).next().removeClass("hidden")
+        e=true
+    }
+})
+registerRePassword.on("input",function(){
+    console.log(registerPassword.eq(0)[0].value);
+    if(registerPassword.eq(0)[0].value == this.value){
+        // console.log("ok");
+        $(this).next().addClass("hidden")
+        f=false;
+    }
+    else{
+        console.log("not Ok");
+        $(this).next().removeClass("hidden")
+        f=true;
+    }
+})
+
+function validation(a,b,c,d,e){
+
+}
+submitButton.attr("disabled",!true)
