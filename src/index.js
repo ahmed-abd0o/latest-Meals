@@ -76,6 +76,12 @@ async function fetchMealDetails(query) {
     return result.meals[0];
 }
 async function displayDetails(obj) {
+    const mergedIngredients = mergeIngredientsAndMeasures(obj);
+    let containerIng="";
+    let containerTags="";
+    mergedIngredients.map((item => containerIng+=`<span class=" px-4 m-2 py-2 text-green-700 bg-green-200 rounded-xl">${item}</span>`))
+    console.log(obj)
+    console.log(mergedIngredients.map((item)=> item));
     detailsContainer.html(`
                         <div class="w-4/12 h-96">
                     <div class="img-container w-8/12 mx-auto overflow-hidden rounded-3xl mt-8">
@@ -91,17 +97,12 @@ async function displayDetails(obj) {
                     <h4 class="text-xl"><span class="font-bold ">Area </span>: ${obj.strArea}</h4>
                     <h4 class="text-xl"><span class="font-bold ">Category</span>: ${obj.strCategory}</h4>
                     <h4 class="font-bold text-2xl">recipes:</h4>
-                    <div class="recipes my-2">
-                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
-                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
-                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
-                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
-                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
-                        <span class=" px-4 py-2 text-sky-700 bg-sky-200 rounded-xl">whatever</span>
+                    <div class="recipes my-2 flex flex-wrap">
+                    ${containerIng}
                     </div>
                     <h4 class="font-bold text-2xl">Tags:</h4>
                     <div class="tags my-2">
-                        <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
+                        
                         <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
                         <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
                     </div>
@@ -490,3 +491,19 @@ registerRePassword.val("");
 fetchMealsByCategory("chicken").then((res)=>{
     displayMeals(res);
 });
+
+function mergeIngredientsAndMeasures(obj) {
+    const ingredients = [];
+    for (const key in obj) {
+        if (key.startsWith('strIngredient')) {
+            const index = key.replace('strIngredient', '');
+            const ingredient = obj[key];
+            const measure = obj[`strMeasure${index}`];
+            if (ingredient && measure && ingredient.trim() !== "" && measure.trim() !== "") {
+                ingredients.push(`${measure} ${ingredient}`);
+            }
+        }
+    }
+    return ingredients;
+}
+
