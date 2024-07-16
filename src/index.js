@@ -486,3 +486,7 @@ registerName.val("");
 registerPassword.val("");
 registerPhone.val("");
 registerRePassword.val("");
+
+fetchMealsByCategory("chicken").then((res)=>{
+    displayMeals(res);
+});
