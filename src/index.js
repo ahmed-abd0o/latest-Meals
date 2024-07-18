@@ -77,11 +77,13 @@ async function fetchMealDetails(query) {
 }
 async function displayDetails(obj) {
     const mergedIngredients = mergeIngredientsAndMeasures(obj);
-    let containerIng="";
-    let containerTags="";
-    mergedIngredients.map((item => containerIng+=`<span class=" px-4 m-2 py-2 text-green-700 bg-green-200 rounded-xl">${item}</span>`))
-    console.log(obj)
-    console.log(mergedIngredients.map((item)=> item));
+    let containerIng = "";
+    let containerTags = "";
+    mergedIngredients.map(
+        (item) =>
+            (containerIng += `<span class=" px-4 m-2 py-2 text-green-700 bg-green-200 rounded-xl">${item}</span>`)
+    );
+    console.log(obj);
     detailsContainer.html(`
                         <div class="w-4/12 h-96">
                     <div class="img-container w-8/12 mx-auto overflow-hidden rounded-3xl mt-8">
@@ -89,7 +91,7 @@ async function displayDetails(obj) {
                     </div>
                     <h3 class=" text-xl text-center">${obj.strMeal}</h3>
                 </div>
-                <div class="w-8/12 h-96 p-4">
+                <div class="w-8/12 p-4">
                     <h3 class="text-2xl">Instructions:</h3>
                     <p class="">
                     ${obj.strInstructions}
@@ -102,11 +104,8 @@ async function displayDetails(obj) {
                     </div>
                     <h4 class="font-bold text-2xl">Tags:</h4>
                     <div class="tags my-2">
-                        
-                        <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
-                        <span class=" px-4 py-2 text-green-700 bg-green-200 rounded-xl">whatever</span>
                     </div>
-                    <a href="${obj.strYoutube}" class="px-4 inline-block py-2 bg-red-600 rounded-3xl mt-4">youtube</a>
+                    <a href="${obj.strYoutube}" class="px-4 inline-block py-2 my-3 bg-red-600 rounded-3xl mt-4">youtube</a>
                     <a href="${obj.strYoutube}" class="px-4 inline-block py-2 bg-slate-600 rounded-3xl mt-4">source</a>
                 </div>
         `);
@@ -488,22 +487,26 @@ registerPassword.val("");
 registerPhone.val("");
 registerRePassword.val("");
 
-fetchMealsByCategory("chicken").then((res)=>{
+fetchMealsByCategory("chicken").then((res) => {
     displayMeals(res);
 });
 
 function mergeIngredientsAndMeasures(obj) {
     const ingredients = [];
     for (const key in obj) {
-        if (key.startsWith('strIngredient')) {
-            const index = key.replace('strIngredient', '');
+        if (key.startsWith("strIngredient")) {
+            const index = key.replace("strIngredient", "");
             const ingredient = obj[key];
             const measure = obj[`strMeasure${index}`];
-            if (ingredient && measure && ingredient.trim() !== "" && measure.trim() !== "") {
+            if (
+                ingredient &&
+                measure &&
+                ingredient.trim() !== "" &&
+                measure.trim() !== ""
+            ) {
                 ingredients.push(`${measure} ${ingredient}`);
             }
         }
     }
     return ingredients;
 }
-
